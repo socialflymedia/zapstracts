@@ -17,19 +17,25 @@ class OnBoard {
 // OnBoarding content list
 final List<OnBoard> demoData = [
   OnBoard(
-    image: "assets/on-boarding/onboarding1.png",
-    title: "Title 01",
-    description: "Discover insights from research papers instantly.",
+    image: "assets/on-boarding/onBoardingImage1.png",
+    title: "Keep up with the latest science updates",
+    description: "Our intelligent search connects you with the most "
+        "relevant research papers, journals, and articles across a wide range of subjects. "
+        "Say goodbye to endless scrolling and hello to smart discovery.",
   ),
   OnBoard(
-    image: "assets/on-boarding/onboarding1.png",
-    title: "Title 02",
-    description: "Stay updated with latest academic trends.",
+    image: "assets/on-boarding/onBoardingImage2.png",
+    title: "Never miss out on important updates.",
+    description: "Our intelligent search connects you with the most relevant research papers,"
+        " journals, and articles across a wide range of subjects. Say goodbye to endless "
+        "scrolling and hello to smart discovery.",
   ),
   OnBoard(
-    image: "assets/on-boarding/onboarding1.png",
-    title: "Title 03",
-    description: "Visualize, summarize and learn smarter.",
+    image: "assets/on-boarding/onBoardingImage3.png",
+    title: "Keep up with the latest science updates",
+    description: "Our intelligent search connects you with the most "
+        "relevant research papers, journals, and articles across a wide range of subjects. "
+        "Say goodbye to endless scrolling and hello to smart discovery.",
   ),
 ];
 
@@ -72,101 +78,60 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xfff3f4f6), // light background
-              Color(0xffffffff),
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-            // Carousel
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() => _pageIndex = index);
-                },
-                itemCount: demoData.length,
-                itemBuilder: (context, index) => OnBoardContent(
-                  title: demoData[index].title,
-                  description: demoData[index].description,
-                  image: demoData[index].image,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Dots Indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                demoData.length,
-                    (index) => Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: DotIndicator(isActive: index == _pageIndex),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Get Started Button
-            InkWell(
-              onTap: () {
-                print("Get Started tapped");
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() => _pageIndex = index);
               },
-              child: Container(
-                width: double.infinity,
-                height: 50.h,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.black, Color(0xff0c0c0c)],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Get started",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+              itemCount: demoData.length,
+              itemBuilder: (context, index) => OnBoardContent(
+                title: demoData[index].title,
+                description: demoData[index].description,
+                image: demoData[index].image,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: List.generate(
+                    demoData.length,
+                        (index) => Padding(
+                      padding: EdgeInsets.only(right: 6.w),
+                      child: DotIndicator(isActive: index == _pageIndex),
                     ),
                   ),
                 ),
-              ),
+                TextButton(
+                  onPressed: () => print("Skip"),
+                  child: Text(
+                    "Skip",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              ],
             ),
-
-            const SizedBox(height: 12),
-
-            // Skip link
-            TextButton(
-              onPressed: () {
-                print("Skipped");
-              },
-              child: Text(
-                "skip",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          // SizedBox(height: 12.h),
+        ],
       ),
     );
   }
+
 }
 
 // OnBoarding content widget
@@ -183,36 +148,63 @@ class OnBoardContent extends StatelessWidget {
   });
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Spacer(),
-        Image.asset(image, height: 250),
-        const SizedBox(height: 24),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        SizedBox(
+          height: 420.h,
+          width: double.infinity,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(image, fit: BoxFit.cover),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.white.withOpacity(0.95)],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black54,
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black54,
+                    height: 1.5,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        const Spacer(),
       ],
     );
   }
+
 }
 
 // Dot Indicator widget
