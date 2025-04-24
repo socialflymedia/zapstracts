@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Branding colors
-  static const Color primary = Color(0xFF7A5CFA);        // Purple lightning
+  static const Color primary = Color(0xFF422687);        // Purple lightning
   static const Color secondary = Color(0xFF0A0A0A);      // Dark gradient text/button
   static const Color accent = Color(0xFF4169E1);         // Blue highlights/splashes
 

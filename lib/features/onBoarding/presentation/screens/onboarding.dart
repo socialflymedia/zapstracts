@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zapstract/core/constants/colors/colors.dart';
+import 'package:zapstract/features/Auth/presentation/screens/createAccount.dart';
+import 'package:zapstract/features/Auth/presentation/screens/login.dart';
 
 // OnBoarding content Model
 class OnBoard {
@@ -113,9 +115,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => print("Skip"),
+                onPressed: () {
+                  if (_pageIndex == demoData.length - 1) {
+                    // Navigate to the next screen
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
+                  } else {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>CreateAccountScreen()));
+                  }
+                },
                   child: Text(
-                    "Skip",
+                    _pageIndex==2?"Continue":"Skip",
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.primary,
