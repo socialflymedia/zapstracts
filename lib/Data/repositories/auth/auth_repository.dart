@@ -1,3 +1,5 @@
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
@@ -64,10 +66,16 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
-
     try {
-      await supabase.auth.signOut();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('user_id');
+      await prefs.remove('email');
+      await prefs.remove('name');
+      await prefs.remove('phone');
+      await prefs.remove('image');
+      await prefs.remove('login');
 
+      await supabase.auth.signOut();
     } on AuthException catch (e) {
       print("AuthException during logout: ${e.message}");
       rethrow;
@@ -76,4 +84,101 @@ class AuthRepository {
       rethrow;
     }
   }
+
+
+  Future<void> signUpWithGoogle() async {
+    const webClientId = 'my-web.apps.googleusercontent.com';
+    const iosClientId = 'my-ios.apps.googleusercontent.com';
+
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId: '401107895655-3o0kq37c5gl2vm5t8tjvtl3hsjvcadgs.apps.googleusercontent.com',
+      serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',
+    );
+    await googleSignIn.signOut();
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      throw 'Google sign-in aborted';
+    }
+
+    final googleAuth = await googleUser.authentication;
+
+    final accessToken = googleAuth.accessToken;
+    final idToken = googleAuth.idToken;
+
+    if (accessToken == null) throw 'No Access Token found.';
+    if (idToken == null) throw 'No ID Token found.';
+
+    final authResponse = await supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    final user = authResponse.user;
+    if (user == null) throw 'User not returned after sign-in.';
+
+    // Insert user data into Supabase 'users' table
+    print(user);
+    print(user.userMetadata);
+    final name = user.userMetadata?['name'] ?? '';
+    final email = user.email ?? '';
+   final image = user.userMetadata?['avatar_url'] ?? '';
+    final phone = user.phone ?? '';
+
+    // Insert or update user in Supabase
+    await supabase.from('users').upsert({
+      'id': user.id,
+      'email': email,
+      'name': name,
+      'phone': phone,
+
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', user.id);
+    await prefs.setString('email', email);
+    await prefs.setString('name', name);
+    await prefs.setString('phone', phone);
+    await prefs.setString('image', image);
+    await prefs.setBool('login', true);
+    print('User signed in and data stored locally.');
+
+
+  }
+
+  // Future<void> signUpWithGoogle() async {
+  //
+  //   // client secret = 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
+  //   const webClientId = 'my-web.apps.googleusercontent.com';
+  //   /// TODO: update the iOS client ID with your own.
+  //   ///
+  //   /// iOS Client ID that you registered with Google Cloud.
+  //   const iosClientId = 'my-ios.apps.googleusercontent.com';
+  //   final GoogleSignIn googleSignIn = GoogleSignIn(
+  //     clientId: '401107895655-3o0kq37c5gl2vm5t8tjvtl3hsjvcadgs.apps.googleusercontent.com',
+  //     serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',
+  //   );
+  //   final googleUser = await googleSignIn.signIn();
+  //   final googleAuth = await googleUser!.authentication;
+  //   final accessToken = googleAuth.accessToken;
+  //   final idToken = googleAuth.idToken;
+  //   if (accessToken == null) {
+  //     throw 'No Access Token found.';
+  //   }
+  //   if (idToken == null) {
+  //     throw 'No ID Token found.';
+  //   }
+  //   await supabase.auth.signInWithIdToken(
+  //     provider: OAuthProvider.google,
+  //     idToken: idToken,
+  //     accessToken: accessToken,
+  //   );
+  //
+  //   final insertRes = await supabase.from('users').insert({
+  //     'id': user.id,
+  //     'email': email,
+  //     'name': name,
+  //     'phone': phone,
+  //   }).select();
+  // }
 }

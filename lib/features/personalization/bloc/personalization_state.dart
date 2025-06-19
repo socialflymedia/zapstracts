@@ -14,7 +14,9 @@ class PersonalizationState extends Equatable {
     this.expertiseLevel,
     this.expertiseSliderValue = 0.0,
   });
-  
+
+
+
   PersonalizationState copyWith({
     PersonalizationStatus? status,
     String? selectedGoal,
@@ -28,7 +30,7 @@ class PersonalizationState extends Equatable {
       expertiseSliderValue: expertiseSliderValue ?? this.expertiseSliderValue,
     );
   }
-  
+
   @override
   List<Object?> get props => [status, selectedGoal, expertiseLevel, expertiseSliderValue];
 }

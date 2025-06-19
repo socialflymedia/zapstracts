@@ -11,6 +11,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLogin);
     on<LogoutRequested>(_onLogout);
     on<AuthStatusChanged>(_onAuthStatusChanged);
+    on<SignInWithGoogle>(_onSignInWithGoogle);
+
     on<TogglePasswordVisibility>(_onTogglePasswordVisibility);
     on<ToggleConfirmPasswordVisibility>(_onToggleConfirmPasswordVisibility);
     on<ToggleAgreement>(_onToggleAgreement);
@@ -38,7 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
     await authRepo.logout();
+
     emit(Unauthenticated());
+
   }
 
   void _onAuthStatusChanged(AuthStatusChanged event, Emitter<AuthState> emit) {
@@ -53,6 +57,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         obscureConfirmPassword: currentState.obscureConfirmPassword,
         agreed: currentState.agreed,
       ));
+    }
+  }
+  Future<void> _onSignInWithGoogle(SignInWithGoogle event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      await authRepo.signUpWithGoogle();
+      emit(Authenticated("Google Sign-in successful"));
+    } catch (e) {
+      emit(AuthError(e.toString()));
     }
   }
 

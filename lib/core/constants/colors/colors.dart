@@ -4,7 +4,8 @@ class AppColors {
   // Branding colors
   static const Color primary = Color(0xFF422687);        // Purple lightning
   static const Color secondary = Color(0xFF0A0A0A);      // Dark gradient text/button
-  static const Color accent = Color(0xFF4169E1);         // Blue highlights/splashes
+  static const Color accent = Color(0xFFE8D7F1)
+  ;         // Blue highlights/splashes
 
   // Background
   static const Color background = Color(0xFFF9F9F9);      // Very light background
