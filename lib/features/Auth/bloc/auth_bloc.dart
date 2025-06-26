@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zapstract/Data/repositories/auth/auth_repository.dart';
+import 'package:zapstract/Data/repositories/personalization/personalization_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -11,6 +12,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLogin);
     on<LogoutRequested>(_onLogout);
     on<AuthStatusChanged>(_onAuthStatusChanged);
+    on<SignUpWithGoogle>(_onSignUpWithGoogle);
     on<SignInWithGoogle>(_onSignInWithGoogle);
 
     on<TogglePasswordVisibility>(_onTogglePasswordVisibility);
@@ -63,6 +65,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await authRepo.signUpWithGoogle();
+
+      await PersonalizationRepository().fetchPreferences();
+      emit(Authenticated("Google Sign-in successful"));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+
+
+  Future<void> _onSignUpWithGoogle(SignUpWithGoogle event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+   var  newUser =   await authRepo.signUpWithGoogle();
+      if (!newUser) {
+        await PersonalizationRepository().fetchPreferences();
+        emit(UserAlreadyPresent("User already exists with this email"));
+
+        return;
+      }
       emit(Authenticated("Google Sign-in successful"));
     } catch (e) {
       emit(AuthError(e.toString()));

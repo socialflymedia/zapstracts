@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zapstract/features/homeScreen/home_screen.dart';
+import 'package:zapstract/features/personalization/presentation/expertise_level_screen.dart';
+import 'package:zapstract/features/personalization/presentation/topic_selection_screen.dart';
 
 import '../../features/personalization/bloc/personalization_bloc.dart';
 import '../../features/personalization/bloc/personalization_event.dart';
@@ -17,17 +19,22 @@ class PersonalizationHeader extends StatelessWidget {
     required this.totalSteps,
   });
 
+
   @override
   @override
   Widget build(BuildContext context) {
+
+
     return BlocConsumer<PersonalizationBloc, PersonalizationState>(
       listener: (context, state) {
         if (state.status == PersonalizationStatus.completed) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );// or your home route
+          print("here");
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => HomeScreen()),
+          // );// or your home route
         }
+
       },
       builder: (context, state) {
         return Column(
@@ -38,18 +45,34 @@ class PersonalizationHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Personalized Your Account',
+                    'Personalize Your Account',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   TextButton(
                     onPressed: () {
-                      context.read<PersonalizationBloc>().add(SkipPersonalization());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Personalization skipped')),
-                      );
+                         print(state.status.toString());
+
+                      if(state.status == PersonalizationStatus.goalsSelected) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>ExpertiseLevelScreen()),
+                        );
+                      } else if (state.status == PersonalizationStatus.expertiseLevelSelected) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TopicSelectionScreen()),
+                        );
+                      } else if (state.status == PersonalizationStatus.topicsSelected) {
+                        context.read<PersonalizationBloc>().add(CompletePersonalization());
+                      }
+
+                      // context.read<PersonalizationBloc>().add(SkipPersonalization());
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(content: Text('Personalization skipped')),
+                      // );
                     },
                     child: Text(
-                      'skip',
+                       state.slidertext,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontWeight: FontWeight.w500,
@@ -63,7 +86,7 @@ class PersonalizationHeader extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Text(
-                'Stay informed with updates that resonates with your preferences.',
+                'Stay informed with updates that resonate with your preferences.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14.sp),
               ),
             ),

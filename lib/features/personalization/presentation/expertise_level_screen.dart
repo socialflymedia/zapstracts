@@ -22,7 +22,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  String _selectedLevelId = 'novice';
+  String _selectedLevelId = '';
   double _sliderValue = 0.0;
 
   @override
@@ -56,7 +56,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
     });
 
     context.read<PersonalizationBloc>().add(
-      SelectExpertiseLevel(level.id, level.sliderValue),
+      SelectExpertiseLevel(level.id, level.sliderValue,"next"),
     );
   }
 
@@ -75,7 +75,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
     });
 
     context.read<PersonalizationBloc>().add(
-      SelectExpertiseLevel(_selectedLevelId, value),
+      SelectExpertiseLevel(_selectedLevelId, value,"next"),
     );
   }
 
@@ -96,7 +96,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
             children: [
               const PersonalizationHeader(
                 currentStep: 2,
-                totalSteps: 2,
+                totalSteps: 3,
               ),
               Expanded(
                 child: FadeTransition(

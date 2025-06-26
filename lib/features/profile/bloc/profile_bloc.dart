@@ -22,9 +22,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final prefs = await SharedPreferences.getInstance();
 
+
+
       final name = prefs.getString('name') ?? 'No Name';
-      final address = prefs.getString('address') ?? 'No Address';
-      final occupation = prefs.getString('occupation') ?? 'Unknown';
+      final address = prefs.getString('selected_goal') ?? 'No Goal';
+      final occupation = prefs.getString('expertise_level') ?? 'Unknown';
       final papersRead = prefs.getInt('papersRead') ?? 0;
       final bookmarks = prefs.getInt('bookmarks') ?? 0;
       final following = prefs.getInt('following') ?? 0;

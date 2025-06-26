@@ -18,6 +18,14 @@ class Authenticated extends AuthState {
   List<Object> get props => [sucessMessage];
 }
 
+class UserAlreadyPresent extends AuthState {
+  final String message;
+
+  UserAlreadyPresent(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
 class Unauthenticated extends AuthState {}
 
 class AuthError extends AuthState {

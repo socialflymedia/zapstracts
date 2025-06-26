@@ -48,3 +48,5 @@ class ToggleConfirmPasswordVisibility extends AuthEvent {}
 
 class ToggleAgreement extends AuthEvent {}
 class SignInWithGoogle extends AuthEvent {}
+
+class SignUpWithGoogle extends AuthEvent {}

@@ -273,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Intrests',
+            'Interests',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,

@@ -84,9 +84,8 @@ class AuthRepository {
       rethrow;
     }
   }
-
-
-  Future<void> signUpWithGoogle() async {
+  Future<bool> signUpWithGoogle() async {
+    bool newUser = false;
     const webClientId = 'my-web.apps.googleusercontent.com';
     const iosClientId = 'my-ios.apps.googleusercontent.com';
 
@@ -94,14 +93,12 @@ class AuthRepository {
       clientId: '401107895655-3o0kq37c5gl2vm5t8tjvtl3hsjvcadgs.apps.googleusercontent.com',
       serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',
     );
-    await googleSignIn.signOut();
+
+    await googleSignIn.signOut(); // To ensure fresh login
     final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      throw 'Google sign-in aborted';
-    }
+    if (googleUser == null) throw 'Google sign-in aborted';
 
     final googleAuth = await googleUser.authentication;
-
     final accessToken = googleAuth.accessToken;
     final idToken = googleAuth.idToken;
 
@@ -117,23 +114,34 @@ class AuthRepository {
     final user = authResponse.user;
     if (user == null) throw 'User not returned after sign-in.';
 
-    // Insert user data into Supabase 'users' table
-    print(user);
-    print(user.userMetadata);
     final name = user.userMetadata?['name'] ?? '';
     final email = user.email ?? '';
-   final image = user.userMetadata?['avatar_url'] ?? '';
+    final image = user.userMetadata?['avatar_url'] ?? '';
     final phone = user.phone ?? '';
 
-    // Insert or update user in Supabase
-    await supabase.from('users').upsert({
-      'id': user.id,
-      'email': email,
-      'name': name,
-      'phone': phone,
+    // ✅ Check if user already exists
+    final userExists = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
 
-    });
+    if (userExists == null) {
+      // First-time sign-up → Insert user
+      await supabase.from('users').insert({
+        'id': user.id,
+        'email': email,
+        'name': name,
+        'phone': phone
+      });
+      print('✅ New user inserted in Supabase');
+      newUser = true;
+    } else {
+      print('👤 User already exists, skipping insert');
+      newUser = false;
+    }
 
+    // ✅ Store locally after checking/inserting user
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_id', user.id);
     await prefs.setString('email', email);
@@ -141,10 +149,12 @@ class AuthRepository {
     await prefs.setString('phone', phone);
     await prefs.setString('image', image);
     await prefs.setBool('login', true);
-    print('User signed in and data stored locally.');
 
+    print('✅ User signed in and data stored locally');
 
+    return newUser; // true → new user, false → already existed
   }
+
 
   // Future<void> signUpWithGoogle() async {
   //

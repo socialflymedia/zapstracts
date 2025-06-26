@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zapstract/features/Auth/bloc/auth_bloc.dart';
 import 'package:zapstract/features/Auth/bloc/auth_event.dart';
 import 'package:zapstract/features/Auth/bloc/auth_state.dart';
+import 'package:zapstract/features/Auth/presentation/screens/createAccount.dart';
 import '../../../../utils/components/loginButtons.dart';
 import '../../../../utils/components/primaryButton.dart';
 import '../../../homeScreen/home_screen.dart';
@@ -151,7 +152,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
                     SizedBox(height: 20.h),
-
+                    InkWell(
+                      onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountScreen()));
+                      },
+                      child: buildSocialButton(text: "SignUp", assetPath: "assets/icons/google.png"),
+                    ),
                     /// OR Divider
                     Row(
                       children: [

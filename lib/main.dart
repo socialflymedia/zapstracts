@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:zapstract/features/personalization/presentation/topic_selection_screen.dart';
 
 import 'Data/repositories/auth/auth_repository.dart';
 import 'features/Auth/bloc/auth_bloc.dart';
@@ -74,7 +75,8 @@ class MyApp extends StatelessWidget {
                   primarySwatch: Colors.blue,
                   textTheme: GoogleFonts.poppinsTextTheme(),
                 ),
-                home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+                 home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+                //home: TopicSelectionScreen()
               ),
             );
           },

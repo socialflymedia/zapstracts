@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zapstract/Data/repositories/auth/auth_repository.dart';
+import 'package:zapstract/features/homeScreen/home_screen.dart';
 import 'package:zapstract/features/personalization/presentation/expertise_level_screen.dart';
 import 'package:zapstract/features/personalization/presentation/goal_selection_screen.dart';
 import 'package:zapstract/utils/components/primaryButton.dart';
@@ -49,6 +50,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   context,
                   MaterialPageRoute(builder: (context) => GoalSelectionScreen()),
                 );
+              }
+              if(state is UserAlreadyPresent){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
               }
             },
             builder: (context, state) {
@@ -120,7 +124,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         // Google Sign Up Button
         InkWell(
             onTap: () {
-              context.read<AuthBloc>().add(SignInWithGoogle());
+              context.read<AuthBloc>().add(SignUpWithGoogle());
             },
             child: buildSocialButton(
                 text: "Login with Google",
