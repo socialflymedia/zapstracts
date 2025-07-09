@@ -25,7 +25,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
 
       final name = prefs.getString('name') ?? 'No Name';
-      final address = prefs.getString('selected_goal') ?? 'No Goal';
+      final subject = prefs.getString('selected_goal') ?? 'No Goal';
       final occupation = prefs.getString('expertise_level') ?? 'Unknown';
       final papersRead = prefs.getInt('papersRead') ?? 0;
       final bookmarks = prefs.getInt('bookmarks') ?? 0;
@@ -42,7 +42,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       final profile = UserProfile(
         name: name,
-        address: address,
+        subject: subject,
         occupation: occupation,
         papersRead: papersRead,
         bookmarks: bookmarks,

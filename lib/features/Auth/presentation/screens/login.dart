@@ -154,10 +154,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 20.h),
                     InkWell(
                       onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountScreen()));
                       },
-                      child: buildSocialButton(text: "SignUp", assetPath: "assets/icons/google.png"),
+                      child: Center(
+                        child: Text(
+                          "Don't have an account? Sign Up",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Color(0xFF422687), // Use your app's primary color
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     ),
+
                     /// OR Divider
                     Row(
                       children: [
@@ -236,3 +247,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+

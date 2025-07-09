@@ -1,12 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-
+import '../../../Data/repositories/home/home_repositorty.dart';
 import '../model/research_paper.dart';
+
 import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(HomeInitial()) {
+  final HomeRepository repository;
+  List<ResearchPaper> _allPapers = [];
+
+  HomeBloc(this.repository) : super(HomeInitial()) {
     on<LoadResearchPapers>(_onLoadResearchPapers);
     on<SearchResearchPapers>(_onSearchResearchPapers);
     on<FilterByCategory>(_onFilterByCategory);
@@ -19,17 +22,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit,
       ) async {
     emit(HomeLoading());
-
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(milliseconds: 500));
-
+      _allPapers = await repository.fetchResearchPapers();
+      print( 'paper from rep ${_allPapers}');
       emit(HomeLoaded(
-        papers: dummyPapers,
-        featuredPapers: dummyPapers.take(1).toList(),
-        trendingPapers: dummyPapers.skip(1).toList(),
-        myFeedPapers: dummyPapers.where((p) => p.tags.contains('physics')).toList(),
-        worldPapers: dummyPapers.where((p) => p.tags.contains('technology')).toList(),
+        papers: _allPapers,
+        featuredPapers: _allPapers.take(1).toList(),
+        trendingPapers: _allPapers.skip(1).toList(),
+        myFeedPapers: _allPapers.where((p) => p.tags.contains('physics')).toList(),
+        worldPapers: _allPapers.where((p) => p.tags.contains('technology')).toList(),
       ));
     } catch (e) {
       emit(HomeError('Failed to load papers: $e'));
@@ -41,9 +42,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit,
       ) async {
     if (state is! HomeLoaded) return;
-
     final currentState = state as HomeLoaded;
-    emit(HomeLoading());
 
     try {
       final filteredPapers = _filterPapers(event.query);
@@ -62,12 +61,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit,
       ) async {
     if (state is! HomeLoaded) return;
-
     final currentState = state as HomeLoaded;
-    emit(HomeLoading());
 
     try {
-      final filteredPapers = dummyPapers
+      final filteredPapers = _allPapers
           .where((paper) => paper.publishedIn == event.category)
           .toList();
 
@@ -85,8 +82,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit,
       ) async {
     if (state is! HomeLoaded) return;
-
     final currentState = state as HomeLoaded;
+
     emit(currentState.copyWith(selectedFeed: event.feedType));
   }
 
@@ -96,18 +93,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ) async {
     if (state is! HomeLoaded) return;
 
-    final currentState = state as HomeLoaded;
-
     try {
-      // Simulate API refresh
-      await Future.delayed(const Duration(milliseconds: 500));
+      _allPapers = await repository.fetchResearchPapers();
 
-      emit(currentState.copyWith(
-        papers: dummyPapers,
-        featuredPapers: dummyPapers.take(1).toList(),
-        trendingPapers: dummyPapers.skip(1).toList(),
-        myFeedPapers: dummyPapers.where((p) => p.tags.contains('physics')).toList(),
-        worldPapers: dummyPapers.where((p) => p.tags.contains('technology')).toList(),
+      emit(HomeLoaded(
+        papers: _allPapers,
+        featuredPapers: _allPapers.take(1).toList(),
+        trendingPapers: _allPapers.skip(1).toList(),
+        myFeedPapers: _allPapers.where((p) => p.tags.contains('physics')).toList(),
+        worldPapers: _allPapers.where((p) => p.tags.contains('technology')).toList(),
       ));
     } catch (e) {
       emit(HomeError('Failed to refresh papers: $e'));
@@ -115,14 +109,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   List<ResearchPaper> _filterPapers(String query) {
-    if (query.isEmpty) {
-      return dummyPapers;
-    }
+    if (query.isEmpty) return _allPapers;
 
-    return dummyPapers
-        .where((paper) =>
+    return _allPapers.where((paper) =>
     paper.title.toLowerCase().contains(query.toLowerCase()) ||
-        paper.summary.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+        paper.summary.toLowerCase().contains(query.toLowerCase())
+    ).toList();
   }
 }

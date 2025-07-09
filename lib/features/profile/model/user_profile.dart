@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class UserProfile extends Equatable {
   final String name;
-  final String address;
+  final String subject;
   final String occupation;
   final int papersRead;
   final int bookmarks;
@@ -13,7 +13,7 @@ class UserProfile extends Equatable {
 
   const UserProfile({
     required this.name,
-    required this.address,
+    required this.subject,
     required this.occupation,
     required this.papersRead,
     required this.bookmarks,
@@ -33,7 +33,7 @@ class UserProfile extends Equatable {
     researchStats,
     language,
     notificationsEnabled,
-    address
+    subject
   ];
 
   UserProfile copyWith({
@@ -49,7 +49,7 @@ class UserProfile extends Equatable {
   }) {
     return UserProfile(
       name: name ?? this.name,
-      address: address ?? this.address,
+      subject: address ?? this.subject,
       occupation: occupation ?? this.occupation,
       papersRead: papersRead ?? this.papersRead,
       bookmarks: bookmarks ?? this.bookmarks,

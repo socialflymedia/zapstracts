@@ -4,11 +4,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:zapstract/Data/repositories/home/home_repositorty.dart';
+import 'package:zapstract/features/article/bloc/article_bloc.dart';
+import 'package:zapstract/features/article/repository/artivle_repository.dart';
 import 'package:zapstract/features/personalization/presentation/topic_selection_screen.dart';
 
 import 'Data/repositories/auth/auth_repository.dart';
 import 'features/Auth/bloc/auth_bloc.dart';
 import 'features/Auth/presentation/screens/createAccount.dart';
+import 'features/article/bloc/article_event.dart';
+import 'features/article/modal/datasource.dart';
+import 'features/article/repository/abs_article.dart';
 import 'features/homeScreen/bloc/home_bloc.dart';
 import 'features/homeScreen/home_screen.dart';
 import 'features/onBoarding/presentation/screens/getStarted1.dart';
@@ -31,7 +37,9 @@ void main() async {
   );
 
   final authRepo = AuthRepository();
-  runApp(MyApp(authRepo: authRepo));
+  final homeRepo = HomeRepository();
+
+  runApp(MyApp(authRepo: authRepo,homeRepo: homeRepo));
 }
 
 Future<bool> checkLoginStatus() async {
@@ -41,7 +49,9 @@ Future<bool> checkLoginStatus() async {
 
 class MyApp extends StatelessWidget {
   final AuthRepository authRepo;
-  const MyApp({required this.authRepo, Key? key}) : super(key: key);
+  final HomeRepository homeRepo ;
+
+  const MyApp({required this.authRepo, required this.homeRepo,Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +75,14 @@ class MyApp extends StatelessWidget {
               providers: [
                 BlocProvider<AuthBloc>(create: (_) => AuthBloc(authRepo)),
                 BlocProvider<PersonalizationBloc>(create: (_) => PersonalizationBloc()),
-                BlocProvider<HomeBloc>(create: (_) => HomeBloc()),
+                BlocProvider<HomeBloc>(create: (_) => HomeBloc(homeRepo)),
                 BlocProvider<ProfileBloc>(create: (_) => ProfileBloc()),
+                BlocProvider<ArticleBloc>( create: (context) => ArticleBloc(
+                  repository: ArticleRepositoryImpl(
+                    localDataSource: ArticleLocalDataSource(),
+                  ),
+                ),),
+
               ],
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,

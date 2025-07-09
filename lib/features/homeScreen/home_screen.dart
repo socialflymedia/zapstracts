@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../utils/components/navbar/customnavbar.dart';
-import '../article/article_screen.dart';
+import '../article/article_summary_page.dart';
 import '../profile/profile_screen.dart';
 import 'bloc/home_bloc.dart';
 import 'bloc/home_event.dart';
@@ -68,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, state) {
                     if (state is HomeLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is HomeLoaded) {
+                    }
+
+                    else if (state is HomeLoaded) {
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const ArticleDetailScreen(),
+          builder: (context) =>  ArticleSummaryPage( paper_id: paper.id,),
         ),
       ),
       child: Container(
@@ -307,20 +309,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 paper.title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                paper.summary,
-                style: TextStyle(
-                  color: Colors.grey[300],
-                  fontSize: 14,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              //const SizedBox(height: 8),
+              // Text(
+              //   paper.summary,
+              //   style: TextStyle(
+              //     color: Colors.grey[300],
+              //     fontSize: 12,
+              //   ),
+              //   maxLines: 2,
+              //   overflow: TextOverflow.ellipsis,
+              // ),
             ],
           ),
         ),
@@ -329,6 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPopularArticles(BuildContext context, List<ResearchPaper> papers) {
+  // print(papers.toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -350,12 +353,13 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: papers.length,
           itemBuilder: (context, index) {
             final paper = papers[index];
+         //  print(paper);
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ArticleDetailScreen(),
+                    builder: (context) => ArticleSummaryPage( paper_id: paper.id),
                   ),
                 );
               },
@@ -454,6 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTrendingArticles(List<ResearchPaper> papers) {
+  //  print(papers[0]);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -481,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ArticleDetailScreen(),
+                      builder: (context) => ArticleSummaryPage(paper_id: paper.id,),
                     ),
                   );
                 },

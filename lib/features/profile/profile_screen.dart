@@ -77,14 +77,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is ProfileLoaded) {
                     return SingleChildScrollView(
-                      child: Column(
-                        children: [
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
 
-                          _buildHeader(context),
-                          _buildProfileInfo(state),
-                          _buildStats(state),
-                          _buildPreferences(context, state),
-                        ],
+                            _buildHeader(context),
+                            _buildProfileInfo(state),
+                             _buildStats(state),
+
+                            _buildPreferences(context, state),
+                          ],
+                        ),
                       ),
                     );
                   } else if (state is ProfileError) {
@@ -219,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  ' ${state.profile.address}',
+                  ' ${state.profile.subject}',
                   textAlign: TextAlign.start,
                   style: TextStyle(
                     fontSize: 14,
@@ -260,38 +265,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStats(ProfileLoaded state) {
+    // Only one selected subject exists
+    final selectedSubject = state.profile.subject;
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
-
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
-            'Interests',
+            'Your Research Focus',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 24),
+          Icon(
+            _getIconForSubject(selectedSubject),
+            size: 50,
+            color: Colors.deepPurple,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            selectedSubject,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 16),
-          ...state.profile.researchStats.entries.map((entry) {
-            return Column(
-              children: [
-                _buildStatBar(entry.key, entry.value),
-                const SizedBox(height: 12),
-              ],
-            );
-          }).toList(),
+          //_buildStatBar(selectedSubject.key, selectedSubject.value),
         ],
       ),
     );
   }
+
+  IconData _getIconForSubject(String subject) {
+    switch (subject.toLowerCase()) {
+      case 'physics':
+        return Icons.science;
+      case 'chemistry':
+        return Icons.bubble_chart;
+      case 'biology':
+        return Icons.biotech;
+      default:
+        return Icons.school;
+    }
+  }
+
 
   Widget _buildStatBar(String label, double progress) {
     return Column(
