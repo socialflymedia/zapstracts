@@ -56,7 +56,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
     });
 
     context.read<PersonalizationBloc>().add(
-      SelectExpertiseLevel(level.id, level.sliderValue,"next"),
+      SelectExpertiseLevel(level.id, level.sliderValue, "next"),
     );
   }
 
@@ -75,7 +75,7 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
     });
 
     context.read<PersonalizationBloc>().add(
-      SelectExpertiseLevel(_selectedLevelId, value,"next"),
+      SelectExpertiseLevel(_selectedLevelId, value, "next"),
     );
   }
 
@@ -101,34 +101,58 @@ class _ExpertiseLevelScreenState extends State<ExpertiseLevelScreen>
               Expanded(
                 child: FadeTransition(
                   opacity: _fadeAnimation,
-                  child: ListView(
+                  child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    children: [
-                      SizedBox(height: 12.h),
-                      ...expertiseLevels.map((level) {
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 12.h),
-                          child: ExpertiseLevelCard(
-                            level: level,
-                            isSelected: _selectedLevelId == level.id,
-                            onTap: () => _updateSelectedLevel(level),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 14.h),
+                        // Cards section - takes up most of the available space
+                        Expanded(
+                          flex: 6,
+                          child: Column(
+                            children: expertiseLevels.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final level = entry.value;
+                              return Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                    bottom: index < expertiseLevels.length - 1 ? 20.h : 0,
+                                  ),
+                                  child: ExpertiseLevelCard(
+                                    level: level,
+                                    isSelected: _selectedLevelId == level.id,
+                                    onTap: () => _updateSelectedLevel(level),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                      SizedBox(height: 15.h),
-                      Text(
-                        'Adjust your Science meter',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 18.sp,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 16.h),
-                      ExpertiseSlider(
-                        value: _sliderValue,
-                        onChanged: _onSliderChanged,
-                      ),
-                    ],
+                        SizedBox(height: 20.h),
+                        // Slider section - fixed space at bottom
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Adjust your Science meter',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontSize: 18.sp,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 16.h),
+                              ExpertiseSlider(
+                                value: _sliderValue,
+                                onChanged: _onSliderChanged,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -34,3 +34,10 @@ class ArticleError extends ArticleState {
   @override
   List<Object> get props => [message];
 }
+
+class SummaryCountIncremented extends ArticleState {
+  const SummaryCountIncremented();
+
+  @override
+  List<Object> get props => [];
+}

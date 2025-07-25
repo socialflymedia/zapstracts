@@ -120,7 +120,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     // Navigate to the next screen
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
                   } else {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>CreateAccountScreen()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
                   }
                 },
                   child: Text(

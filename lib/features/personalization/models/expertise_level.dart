@@ -19,7 +19,7 @@ final List<ExpertiseLevel> expertiseLevels = [
     id: 'novice',
     title: 'Novice',
     emoji: '👍',
-    description: 'Just starting to dip your toes in? We\'ll keep it super simple and guide you step by step.',
+    description: 'Just starting to dip your toes in? We\'ll keep it super simple.',
     sliderValue: 0.0,
   ),
   const ExpertiseLevel(
@@ -36,11 +36,5 @@ final List<ExpertiseLevel> expertiseLevels = [
     description: 'Actively studying or working in science? Let\'s cut through the clutter and get to the essence.',
     sliderValue: 0.66,
   ),
-  const ExpertiseLevel(
-    id: 'expert',
-    title: 'Expert',
-    emoji: '❤️',
-    description: 'Need the gist without fluff? Expect sharp, concise insights at your level.',
-    sliderValue: 1.0,
-  ),
+
 ];

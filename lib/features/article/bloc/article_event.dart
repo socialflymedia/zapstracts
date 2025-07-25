@@ -15,3 +15,7 @@ class LoadArticleEvent extends ArticleEvent {
 class RefreshArticleEvent extends ArticleEvent {
   const RefreshArticleEvent();
 }
+
+class IncreamentSummaryCount extends ArticleEvent {
+
+}

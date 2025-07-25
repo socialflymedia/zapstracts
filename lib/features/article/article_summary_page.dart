@@ -4,8 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:zapstract/core/constants/colors/colors.dart';
 import 'package:zapstract/features/article/bloc/article_event.dart';
+import 'package:zapstract/features/homeScreen/bloc/home_bloc.dart';
+import 'package:zapstract/features/homeScreen/bloc/home_event.dart';
 
 import '../../utils/components/article/section.dart';
+import '../../utils/components/feedback_form/feedback_form_widget.dart';
+import '../homeScreen/bloc/home_state.dart';
 import 'bloc/article_bloc.dart';
 import 'bloc/article_state.dart';
 
@@ -37,8 +41,9 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
   void initState() {
     super.initState();
     _pageController = PageController();
-
+    context.read<HomeBloc>().add(CheckFeedbackStatus());
     // Dispatch LoadArticle with the paper_id
+    context.read<ArticleBloc>().add(IncreamentSummaryCount());
     context.read<ArticleBloc>().add(LoadArticleEvent(widget.paper_id));
   }
 
@@ -70,10 +75,17 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final homeState = context.read<HomeBloc>().state;
+    // if (homeState is HomeLoaded ) {
+    //   print('Current page: $_currentPage, Should show feedback: ${homeState.shouldShowFeedback}, Feedback given: ${homeState.feedbackGiven}');
+    //   print('Showing feedback screen');
+    //   return _buildFeedbackScreen(); // Or pass any required props if needed
+    // }
     return Scaffold(
       body: BlocBuilder<ArticleBloc, ArticleState>(
         builder: (context, state) {
           if (state is ArticleLoading) {
+
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -121,11 +133,14 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
                 if (sectionKey == 'hero') {
                   return _buildHeroPage(context, article);
                 }else {
+                  print(article.sections);
                   final section = article.sections[sectionKey];
+                  print(section);
                   if (section != null) {
                     return _buildSectionStoryPage(context, article, section, sectionKey);
                   }
                 }
+                print('Section not found for key: ${sectionKey.length}');
                 print('Section not found for key: $sectionKey');
                 return const SizedBox.shrink();
               },
@@ -492,5 +507,77 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
   }
 
 
+  Widget _buildFeedbackScreen() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  _buildFeedbackHeader(),
+                  const SizedBox(height: 24),
+                  const FeedbackFormWidget(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedbackHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF6750A4).withOpacity(0.1),
+            const Color(0xFF6750A4).withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF6750A4).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.celebration,
+              color: Color(0xFF6750A4),
+              size: 32,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Thank you for exploring!',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF6750A4),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'You\'ve viewed 3 research summaries. Your feedback helps us improve the experience for everyone.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
 }

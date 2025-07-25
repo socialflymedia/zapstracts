@@ -1,14 +1,6 @@
-import 'package:equatable/equatable.dart';
-
 import '../model/research_paper.dart';
 
-
-abstract class HomeState extends Equatable {
-  const HomeState();
-
-  @override
-  List<Object?> get props => [];
-}
+abstract class HomeState {}
 
 class HomeInitial extends HomeState {}
 
@@ -21,31 +13,25 @@ class HomeLoaded extends HomeState {
   final List<ResearchPaper> myFeedPapers;
   final List<ResearchPaper> worldPapers;
   final String searchQuery;
-  final String selectedCategory;
+  final String? selectedCategory;
   final FeedType selectedFeed;
+  final bool shouldShowFeedback;
+  final int summaryCount;
+  final bool feedbackGiven;
 
-  const HomeLoaded({
+  HomeLoaded({
     required this.papers,
     required this.featuredPapers,
     required this.trendingPapers,
     required this.myFeedPapers,
     required this.worldPapers,
     this.searchQuery = '',
-    this.selectedCategory = '',
+    this.selectedCategory,
     this.selectedFeed = FeedType.myFeed,
+    this.shouldShowFeedback = false,
+    this.summaryCount = 0,
+    this.feedbackGiven = false,
   });
-
-  @override
-  List<Object?> get props => [
-    papers,
-    featuredPapers,
-    trendingPapers,
-    myFeedPapers,
-    worldPapers,
-    searchQuery,
-    selectedCategory,
-    selectedFeed,
-  ];
 
   HomeLoaded copyWith({
     List<ResearchPaper>? papers,
@@ -56,6 +42,9 @@ class HomeLoaded extends HomeState {
     String? searchQuery,
     String? selectedCategory,
     FeedType? selectedFeed,
+    bool? shouldShowFeedback,
+    int? summaryCount,
+    bool? feedbackGiven,
   }) {
     return HomeLoaded(
       papers: papers ?? this.papers,
@@ -66,17 +55,25 @@ class HomeLoaded extends HomeState {
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       selectedFeed: selectedFeed ?? this.selectedFeed,
+      shouldShowFeedback: shouldShowFeedback ?? this.shouldShowFeedback,
+      summaryCount: summaryCount ?? this.summaryCount,
+      feedbackGiven: feedbackGiven ?? this.feedbackGiven,
     );
   }
 }
 
 class HomeError extends HomeState {
   final String message;
+  HomeError(this.message);
+}
 
-  const HomeError(this.message);
+class FeedbackSubmitting extends HomeState {}
 
-  @override
-  List<Object?> get props => [message];
+class FeedbackSubmitted extends HomeState {}
+
+class FeedbackError extends HomeState {
+  final String message;
+  FeedbackError(this.message);
 }
 
 enum FeedType { myFeed, world, trending }

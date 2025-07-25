@@ -26,6 +26,12 @@ class UserAlreadyPresent extends AuthState {
   @override
   List<Object> get props => [message];
 }
+class NewUserAuthenticated extends AuthState {
+  final String message;
+
+  NewUserAuthenticated(this.message);
+}
+
 class Unauthenticated extends AuthState {}
 
 class AuthError extends AuthState {

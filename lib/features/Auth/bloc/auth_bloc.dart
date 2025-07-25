@@ -64,14 +64,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onSignInWithGoogle(SignInWithGoogle event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      await authRepo.signUpWithGoogle();
+      bool isNewUser = await authRepo.signUpWithGoogle();
 
-      await PersonalizationRepository().fetchPreferences();
-      emit(Authenticated("Google Sign-in successful"));
+      if (isNewUser) {
+        emit(NewUserAuthenticated("Welcome new user"));
+      } else {
+        await PersonalizationRepository().fetchPreferences();
+        emit(Authenticated("Welcome back"));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
+
 
 
 

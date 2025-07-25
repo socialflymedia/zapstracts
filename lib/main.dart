@@ -10,6 +10,7 @@ import 'package:zapstract/features/article/repository/artivle_repository.dart';
 import 'package:zapstract/features/personalization/presentation/topic_selection_screen.dart';
 
 import 'Data/repositories/auth/auth_repository.dart';
+import 'Data/repositories/search/search_repository.dart';
 import 'features/Auth/bloc/auth_bloc.dart';
 import 'features/Auth/presentation/screens/createAccount.dart';
 import 'features/article/bloc/article_event.dart';
@@ -23,6 +24,7 @@ import 'features/personalization/bloc/personalization_bloc.dart';
 import 'features/personalization/presentation/expertise_level_screen.dart';
 import 'features/personalization/presentation/goal_selection_screen.dart';
 import 'features/profile/bloc/profile_bloc.dart';
+import 'features/search/bloc/search_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +40,8 @@ void main() async {
 
   final authRepo = AuthRepository();
   final homeRepo = HomeRepository();
-
-  runApp(MyApp(authRepo: authRepo,homeRepo: homeRepo));
+  final searchRepo = ResearchRepository();
+  runApp(MyApp(authRepo: authRepo,homeRepo: homeRepo,searchRepo: searchRepo));
 }
 
 Future<bool> checkLoginStatus() async {
@@ -50,8 +52,8 @@ Future<bool> checkLoginStatus() async {
 class MyApp extends StatelessWidget {
   final AuthRepository authRepo;
   final HomeRepository homeRepo ;
-
-  const MyApp({required this.authRepo, required this.homeRepo,Key? key}) : super(key: key);
+  final ResearchRepository searchRepo;
+  const MyApp({required this.authRepo, required this.homeRepo,required this.searchRepo,Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,9 @@ class MyApp extends StatelessWidget {
                     localDataSource: ArticleLocalDataSource(),
                   ),
                 ),),
+                BlocProvider<SearchBloc>(
+                  create: (context) => SearchBloc(repository: searchRepo),
+                ),
 
               ],
               child: MaterialApp(
@@ -92,6 +97,7 @@ class MyApp extends StatelessWidget {
                   textTheme: GoogleFonts.poppinsTextTheme(),
                 ),
                  home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+               // home: ExpertiseLevelScreen()
                 //home: TopicSelectionScreen()
               ),
             );

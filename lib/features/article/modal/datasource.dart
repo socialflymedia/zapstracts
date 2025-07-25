@@ -13,7 +13,7 @@ class ArticleLocalDataSource {
         .eq('paper_id', paperId)
         .single();
 
-    print('response: $response');
+    //print('response: $response');
     if (response == null) throw Exception("Article not found");
 
     final imageResponse = await supabase
@@ -21,14 +21,14 @@ class ArticleLocalDataSource {
         .select('explanation_image_url')
         .eq('paper_id', paperId)
         .maybeSingle();
- print('imageResponse: $imageResponse');
+ //print('imageResponse: $imageResponse');
     final paperData = await supabase
         .from('papers_metadata')
         .select()
         .eq('paper_id', paperId)
         .single();
 
-    print('paperData: $paperData');
+   // print('paperData: $paperData');
     final String summary = response['summary'] ?? '';
 
     final Map<String, ArticleSection> parsedSections = _parseSummaryIntoSections(summary);
@@ -40,7 +40,7 @@ class ArticleLocalDataSource {
     //     readTime: 1,
     //   );
     // }
-   print(parsedSections);
+   //print(parsedSections);
     return Article(
       id: paperId,
       title: paperData['title'],
@@ -55,29 +55,23 @@ class ArticleLocalDataSource {
 
   /// Split the summary into sections like Abstract, Introduction, etc.
   Map<String, ArticleSection> _parseSummaryIntoSections(String summary) {
-    final sectionTitles = [
-      'Abstract',
-      'Introduction',
-      'Methods',
-      'Results',
-      'Conclusion',
-    ];
-
     final Map<String, ArticleSection> sections = {};
 
     final regex = RegExp(
-      r'(?<=\n|^)(Abstract|Introduction|Methods|Results|Conclusion)\n',
+      r'(?:\*\*)?(Abstract|Introduction|Methods|Results|Conclusion)(?:\*\*)?',
       caseSensitive: false,
     );
 
-    final matches = regex.allMatches(summary);
-    final List<RegExpMatch> matchList = matches.toList();
+    final matches = regex.allMatches(summary).toList();
+    print('matches: $matches');
 
-    for (int i = 0; i < matchList.length; i++) {
-      final match = matchList[i];
+    for (int i = 0; i < matches.length; i++) {
+      final match = matches[i];
       final title = match.group(1)!;
+
       final start = match.end;
-      final end = (i + 1 < matchList.length) ? matchList[i + 1].start : summary.length;
+      final end = (i + 1 < matches.length) ? matches[i + 1].start : summary.length;
+
       final content = summary.substring(start, end).trim();
 
       sections[title] = ArticleSection(
@@ -89,4 +83,6 @@ class ArticleLocalDataSource {
 
     return sections;
   }
+
+
 }

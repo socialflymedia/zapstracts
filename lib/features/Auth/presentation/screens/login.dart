@@ -5,6 +5,7 @@ import 'package:zapstract/features/Auth/bloc/auth_bloc.dart';
 import 'package:zapstract/features/Auth/bloc/auth_event.dart';
 import 'package:zapstract/features/Auth/bloc/auth_state.dart';
 import 'package:zapstract/features/Auth/presentation/screens/createAccount.dart';
+import 'package:zapstract/features/personalization/presentation/goal_selection_screen.dart';
 import '../../../../utils/components/loginButtons.dart';
 import '../../../../utils/components/primaryButton.dart';
 import '../../../homeScreen/home_screen.dart';
@@ -39,16 +40,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     SnackBar(content: Text(state.message)),
                   );
                 }
+                if (state is NewUserAuthenticated) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Welcome new user")),
+                  );
+                  // Navigate to onboarding or preference selection
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => GoalSelectionScreen()), // replace with your onboarding widget
+                  );
+                }
+
                 if (state is Authenticated) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Login successful")),
                   );
-                  // Navigate to home screen or wherever you want after login
+                  // Navigate to home screen
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 }
+
               },
               builder: (context, state) {
                 // Get password visibility state

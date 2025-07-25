@@ -59,11 +59,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               listener: (context, authState) {
                 if (authState is Unauthenticated) {
                   print("User is not authenticated");
-                  Navigator.pushReplacement(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (route) => false, // This removes ALL previous routes from the stack
                   );
                 }
+
               },
               builder: (context, authState) {
                 return const SizedBox(); // or your UI

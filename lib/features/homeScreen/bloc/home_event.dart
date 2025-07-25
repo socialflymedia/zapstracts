@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 
+import '../model/feedback_form_modal.dart';
 import 'home_state.dart';
 
 abstract class HomeEvent extends Equatable {
@@ -9,6 +10,7 @@ abstract class HomeEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
 
 class LoadResearchPapers extends HomeEvent {}
 
@@ -40,3 +42,16 @@ class ChangeFeedType extends HomeEvent {
 }
 
 class RefreshResearchPapers extends HomeEvent {}
+
+// New feedback-related events
+class CheckFeedbackStatus extends HomeEvent {}
+
+class SubmitFeedback extends HomeEvent {
+  final FeedbackModel feedback;
+  SubmitFeedback(this.feedback);
+}
+
+class IncrementSummaryCount extends HomeEvent {}
+
+class DismissFeedbackForm extends HomeEvent {}
+
