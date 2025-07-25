@@ -44,7 +44,7 @@ class ArticleLocalDataSource {
     return Article(
       id: paperId,
       title: paperData['title'],
-      subtitle: 'Generated Summary',
+      subtitle: '',
       imageUrl: imageResponse?['explanation_image_url'] ?? '',
       author: paperData['author'],
       journal: paperData['publication'],

@@ -244,7 +244,7 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
 
             // Title and content at bottom
             Positioned(
-              bottom: 100,
+              bottom: 50,
               left: 20,
               right: 20,
               child: Column(
@@ -259,15 +259,7 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
                       height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    article.subtitle,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.4,
-                    ),
-                  ),
+
                 ],
               ),
             ),

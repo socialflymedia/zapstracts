@@ -31,7 +31,7 @@ class ResearchPaper {
     return ResearchPaper(
       id: map['paper_id'] ?? '',
       title: map['title'] ?? '',
-      summary: 'No summary available',
+      summary: '',
       imageUrl: imageUrl,
       author: map['author'] ?? '',
       publishedIn: map['publication'] ?? '',
