@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../modal/article_modal.dart';
 
@@ -5,6 +6,11 @@ class ArticleLocalDataSource {
   final supabase = Supabase.instance.client;
   ArticleLocalDataSource();
 
+
+  static Future<String> getExpertiseLevel() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('expertise_level') ?? '';
+  }
   Future<Article> getArticle(String paperId) async {
     print('here ${paperId}');
     final response = await supabase
@@ -29,8 +35,24 @@ class ArticleLocalDataSource {
         .single();
 
    // print('paperData: $paperData');
-    final String summary = response['summary'] ?? '';
+    String expertiseLevel =  await getExpertiseLevel();
+    print(expertiseLevel);
+// Load appropriate summary based on expertise level
+    String summary = '';
 
+    if (expertiseLevel == 'novice') {
+      summary = response['summary'] ?? '';
+    } else if (expertiseLevel == 'learning') {
+      summary = response['summary_intermediate'] ?? '';
+    } else if (expertiseLevel == 'student') {
+      summary = response['summary_expert'] ?? '';
+    } else {
+      // Default fallback
+      summary = response['summary'] ?? '';
+    }
+   // final String summary = response['summary'] ?? '';
+
+    print(summary);
     final Map<String, ArticleSection> parsedSections = _parseSummaryIntoSections(summary);
 
     // if (imageResponse?['explanation_image_url'] != null) {
