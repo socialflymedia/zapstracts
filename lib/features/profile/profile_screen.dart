@@ -6,6 +6,7 @@ import 'package:zapstract/features/Auth/bloc/auth_bloc.dart';
 import 'package:zapstract/features/Auth/presentation/screens/createAccount.dart';
 import 'package:zapstract/features/Auth/presentation/screens/login.dart';
 import 'package:zapstract/features/homeScreen/home_screen.dart';
+import 'package:zapstract/features/search/presentation/search_screen.dart';
 
 import '../../utils/components/navbar/customnavbar.dart';
 import '../Auth/bloc/auth_event.dart';
@@ -38,6 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
+    else if(index==0){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SearchScreen()),
       );
     }
    else if (index == 2) {

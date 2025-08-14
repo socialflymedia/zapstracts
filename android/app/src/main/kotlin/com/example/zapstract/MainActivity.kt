@@ -1,4 +1,4 @@
-package com.example.zapstract
+package com.zapstracts.app
 
 import io.flutter.embedding.android.FlutterActivity
 
