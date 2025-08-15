@@ -1,59 +1,128 @@
 import 'package:equatable/equatable.dart';
 
 abstract class AuthState extends Equatable {
+  final bool obscurePassword;
+  final bool obscureConfirmPassword;
+  final bool agreed;
+
+  const AuthState({
+    this.obscurePassword = true,
+    this.obscureConfirmPassword = true,
+    this.agreed = false,
+  });
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [obscurePassword, obscureConfirmPassword, agreed];
 }
 
-class AuthInitial extends AuthState {}
+class AuthInitial extends AuthState {
+  const AuthInitial({
+    bool obscurePassword = true,
+    bool obscureConfirmPassword = true,
+    bool agreed = false,
+  }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
+}
 
-class AuthLoading extends AuthState {}
+class AuthLoading extends AuthState {
+  const AuthLoading({
+    bool obscurePassword = true,
+    bool obscureConfirmPassword = true,
+    bool agreed = false,
+  }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
+}
 
 class Authenticated extends AuthState {
-  final String sucessMessage;
+  final String successMessage;
 
-  Authenticated(this.sucessMessage);
+  const Authenticated(
+      this.successMessage, {
+        bool obscurePassword = true,
+        bool obscureConfirmPassword = true,
+        bool agreed = false,
+      }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
 
   @override
-  List<Object> get props => [sucessMessage];
+  List<Object?> get props =>
+      [successMessage, obscurePassword, obscureConfirmPassword, agreed];
 }
 
 class UserAlreadyPresent extends AuthState {
   final String message;
 
-  UserAlreadyPresent(this.message);
+  const UserAlreadyPresent(
+      this.message, {
+        bool obscurePassword = true,
+        bool obscureConfirmPassword = true,
+        bool agreed = false,
+      }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props =>
+      [message, obscurePassword, obscureConfirmPassword, agreed];
 }
+
 class NewUserAuthenticated extends AuthState {
   final String message;
 
-  NewUserAuthenticated(this.message);
+  const NewUserAuthenticated(
+      this.message, {
+        bool obscurePassword = true,
+        bool obscureConfirmPassword = true,
+        bool agreed = false,
+      }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
+
+  @override
+  List<Object?> get props =>
+      [message, obscurePassword, obscureConfirmPassword, agreed];
 }
 
-class Unauthenticated extends AuthState {}
+class Unauthenticated extends AuthState {
+  const Unauthenticated({
+    bool obscurePassword = true,
+    bool obscureConfirmPassword = true,
+    bool agreed = false,
+  }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
+}
 
 class AuthError extends AuthState {
   final String message;
 
-  AuthError(this.message);
+  const AuthError(
+      this.message, {
+        bool obscurePassword = true,
+        bool obscureConfirmPassword = true,
+        bool agreed = false,
+      }) : super(
+    obscurePassword: obscurePassword,
+    obscureConfirmPassword: obscureConfirmPassword,
+    agreed: agreed,
+  );
 
   @override
-  List<Object> get props => [message];
-}
-
-class AuthPasswordVisibilityState extends AuthState {
-  final bool obscurePassword;
-  final bool obscureConfirmPassword;
-  final bool agreed;
-
-  AuthPasswordVisibilityState({
-    required this.obscurePassword,
-    required this.obscureConfirmPassword,
-    required this.agreed,
-  });
-
-  @override
-  List<Object> get props => [obscurePassword, obscureConfirmPassword, agreed];
+  List<Object?> get props =>
+      [message, obscurePassword, obscureConfirmPassword, agreed];
 }

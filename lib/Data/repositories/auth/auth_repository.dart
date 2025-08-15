@@ -33,6 +33,17 @@ class AuthRepository {
         'phone': phone,
       }).select();
 
+
+
+
+      // ✅ Store locally after checking/inserting user
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_id', user.id);
+      await prefs.setString('email', email);
+      await prefs.setString('name', name);
+      await prefs.setString('phone', phone);
+    //  await prefs.setString('image', image);
+      await prefs.setBool('login', true);
       print("Insert result: $insertRes");
       print("User data inserted successfully");
     } on AuthException catch (e) {

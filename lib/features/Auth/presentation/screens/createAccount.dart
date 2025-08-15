@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zapstract/Data/repositories/auth/auth_repository.dart';
 import 'package:zapstract/features/homeScreen/home_screen.dart';
-import 'package:zapstract/features/personalization/presentation/expertise_level_screen.dart';
 import 'package:zapstract/features/personalization/presentation/goal_selection_screen.dart';
 import 'package:zapstract/utils/components/primaryButton.dart';
 import 'package:zapstract/utils/components/loginButtons.dart';
@@ -23,13 +21,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _confirmController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // Initialize the password visibility state when the screen loads
-    // context.read<AuthBloc>().add(AuthInitial() as AuthEvent);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -39,26 +30,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             listener: (context, state) {
               if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message))
+                  SnackBar(content: Text(state.message)),
                 );
               }
               if (state is Authenticated) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Sign up Successful"))
+                  SnackBar(content: Text("Sign up Successful")),
                 );
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => GoalSelectionScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => GoalSelectionScreen(),
+                  ),
                 );
               }
-              if(state is UserAlreadyPresent){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
+              if (state is UserAlreadyPresent) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => HomeScreen()),
+                );
               }
             },
             builder: (context, state) {
               final bloc = context.read<AuthBloc>();
 
-              // Show loading indicator
               if (state is AuthLoading) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height,
@@ -68,9 +63,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 );
               }
 
-              // For all other states (including AuthInitial, AuthPasswordVisibilityState, etc.)
-              // we show the main UI
-              return _buildMainContent(state, bloc);
+              // ✅ Now these values are always available in every state
+              final obscurePassword = state.obscurePassword;
+              final obscureConfirmPassword = state.obscureConfirmPassword;
+              final agreed = state.agreed;
+
+              return _buildMainContent(
+                state,
+                bloc,
+                obscurePassword,
+                obscureConfirmPassword,
+                agreed,
+              );
             },
           ),
         ),
@@ -78,18 +82,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
   }
 
-  Widget _buildMainContent(AuthState state, AuthBloc bloc) {
-    // Get visibility states - provide defaults if not AuthPasswordVisibilityState
-    bool obscurePassword = true;
-    bool obscureConfirmPassword = true;
-    bool agreed = false;
-
-    if (state is AuthPasswordVisibilityState) {
-      obscurePassword = state.obscurePassword;
-      obscureConfirmPassword = state.obscureConfirmPassword;
-      agreed = state.agreed;
-    }
-
+  Widget _buildMainContent(
+      AuthState state,
+      AuthBloc bloc,
+      bool obscurePassword,
+      bool obscureConfirmPassword,
+      bool agreed,
+      ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,8 +103,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               Image.asset('assets/logo/logo1.png', height: 150.h),
               SizedBox(height: 8.h),
               Text(
-                  "Create your account",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp)
+                "Create your account",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
               ),
               SizedBox(height: 8.h),
               Padding(
@@ -123,13 +122,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
         // Google Sign Up Button
         InkWell(
-            onTap: () {
-              context.read<AuthBloc>().add(SignUpWithGoogle());
-            },
-            child: buildSocialButton(
-                text: "Login with Google",
-                assetPath: "assets/icons/google.png"
-            )
+          onTap: () {
+            context.read<AuthBloc>().add(SignUpWithGoogle());
+          },
+          child: buildSocialButton(
+            text: "Login with Google",
+            assetPath: "assets/icons/google.png",
+          ),
         ),
 
         SizedBox(height: 16.h),
@@ -194,23 +193,23 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
             if (!agreed) {
               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Please agree to terms."))
+                SnackBar(content: Text("Please agree to terms.")),
               );
               return;
             }
 
             if (password != confirm) {
               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Passwords do not match."))
+                SnackBar(content: Text("Passwords do not match.")),
               );
               return;
             }
 
             bloc.add(SignUpRequested(
-                email: email,
-                password: password,
-                name: username,
-                phone: ''
+              email: email,
+              password: password,
+              name: username,
+              phone: '',
             ));
           },
         ),
@@ -242,14 +241,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             suffixIcon: isPassword
                 ? IconButton(
               icon: Icon(
-                  obscureText ? Icons.visibility : Icons.visibility_off,
-                  size: 20.sp
+                obscureText ? Icons.visibility : Icons.visibility_off,
+                size: 20.sp,
               ),
               onPressed: toggle,
             )
                 : null,
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r)
+              borderRadius: BorderRadius.circular(12.r),
             ),
           ),
         ),

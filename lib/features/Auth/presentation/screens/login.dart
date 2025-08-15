@@ -19,6 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _obscurePassword = true; // local visibility state
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -44,10 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Welcome new user")),
                   );
-                  // Navigate to onboarding or preference selection
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => GoalSelectionScreen()), // replace with your onboarding widget
+                    MaterialPageRoute(
+                        builder: (context) => GoalSelectionScreen()),
                   );
                 }
 
@@ -55,21 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Login successful")),
                   );
-                  // Navigate to home screen
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 }
-
               },
               builder: (context, state) {
-                // Get password visibility state
-                bool obscurePassword = true;
-                if (state is AuthPasswordVisibilityState) {
-                  obscurePassword = state.obscurePassword;
-                }
-
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -96,7 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             "Join our community and experience a seamless way to read science news",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: 14.sp, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -111,15 +106,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.email,
                     ),
 
-                    /// Password Field
+                    /// Password Field (local state)
                     _buildTextField(
                       controller: _passwordController,
                       label: "Password",
                       placeholder: "..........",
                       icon: Icons.lock,
                       isPassword: true,
-                      obscureText: obscurePassword,
-                      toggle: () => context.read<AuthBloc>().add(TogglePasswordVisibility()),
+                      obscureText: _obscurePassword,
+                      toggle: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
 
                     SizedBox(height: 4.h),
@@ -129,10 +128,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           children: [
                             Checkbox(value: true, onChanged: (_) {}),
-                            Text("Remember Me", style: TextStyle(fontSize: 12.sp)),
+                            Text("Remember Me",
+                                style: TextStyle(fontSize: 12.sp)),
                           ],
                         ),
-                        Text("Forgot password?", style: TextStyle(fontSize: 12.sp)),
+                        Text("Forgot password?",
+                            style: TextStyle(fontSize: 12.sp)),
                       ],
                     ),
 
@@ -142,39 +143,47 @@ class _LoginScreenState extends State<LoginScreen> {
                     state is AuthLoading
                         ? Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF422687), // AppColors.primary
+                        color: Color(0xFF422687),
                       ),
                     )
                         : CustomGradientButton(
                       text: "Login",
                       onPressed: () {
                         final email = _emailController.text.trim();
-                        final password = _passwordController.text.trim();
+                        final password =
+                        _passwordController.text.trim();
 
                         if (email.isEmpty || password.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please fill all fields")),
+                            SnackBar(
+                                content:
+                                Text("Please fill all fields")),
                           );
                           return;
                         }
 
-                        context.read<AuthBloc>().add(LoginRequested(email: email, password: password));
+                        context.read<AuthBloc>().add(
+                          LoginRequested(
+                              email: email, password: password),
+                        );
                       },
                     ),
-
-
 
                     SizedBox(height: 20.h),
                     InkWell(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateAccountScreen()),
+                        );
                       },
                       child: Center(
                         child: Text(
                           "Don't have an account? Sign Up",
                           style: TextStyle(
                             fontSize: 14.sp,
-                            color: Color(0xFF422687), // Use your app's primary color
+                            color: Color(0xFF422687),
                             fontWeight: FontWeight.w600,
                             decoration: TextDecoration.underline,
                           ),
@@ -188,7 +197,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(child: Divider()),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8.w),
-                          child: Text("OR", style: TextStyle(color: Colors.grey)),
+                          child:
+                          Text("OR", style: TextStyle(color: Colors.grey)),
                         ),
                         Expanded(child: Divider()),
                       ],
@@ -197,7 +207,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 20.h),
 
                     /// Apple Button
-                    buildSocialButton(text: "Login with Apple", icon: Icons.apple),
+                    buildSocialButton(
+                        text: "Login with Apple", icon: Icons.apple),
 
                     SizedBox(height: 12.h),
 
@@ -206,7 +217,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         context.read<AuthBloc>().add(SignInWithGoogle());
                       },
-                      child: buildSocialButton(text: "Login with Google", assetPath: "assets/icons/google.png"),
+                      child: buildSocialButton(
+                          text: "Login with Google",
+                          assetPath: "assets/icons/google.png"),
                     ),
                   ],
                 );
@@ -260,5 +273,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
