@@ -34,7 +34,7 @@ jobs:
         working-directory: ios
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --no-simulator
 
       - name: Prepare IPA Payload
         run: mkdir Payload
