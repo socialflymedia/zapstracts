@@ -9,32 +9,46 @@ jobs:
     runs-on: macos-latest
     env:
       IPHONEOS_DEPLOYMENT_TARGET: 17.0
-    steps:
-      - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           architecture: x64
-      - run: flutter pub get
-      
 
-      - run: pod repo update
+      - name: Flutter clean & pub get
+        run: |
+          flutter clean
+          flutter pub get
+
+      - name: Remove old Pods and lockfiles
+        run: rm -rf Pods Podfile.lock Runner.xcworkspace
         working-directory: ios
 
-      - run: flutter build ios --release --no-codesign
+      - name: Install CocoaPods
+        run: pod install --repo-update
+        working-directory: ios
 
-      - run: mkdir Payload
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Prepare IPA Payload
+        run: mkdir Payload
         working-directory: build/ios/iphoneos
 
-      - run: mv Runner.app/ Payload
+      - name: Move Runner.app into Payload
+        run: mv Runner.app Payload
         working-directory: build/ios/iphoneos
 
-      - name: Zip output
+      - name: Zip IPA
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
-      - name: Upload binaries to release
+      - name: Upload IPA to GitHub Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
