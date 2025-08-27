@@ -22,6 +22,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
     try {
       // Get current count
+      print('Incrementing summary count for user: $userId');
       final response = await supabase
           .from('summary_count')
           .select('summary_count')
@@ -32,10 +33,10 @@ class ArticleRepositoryImpl implements ArticleRepository {
       int updatedCount = currentCount + 1;
 
       // Update count in DB
-      await supabase.from('summary_count').update({
+    final res=  await supabase.from('summary_count').update({
         'summary_count': updatedCount,
       }).eq('user_id', userId);
-
+ print(res);
       // Dispatch Bloc event
       // if (context.mounted) {
       //   context.read<HomeBloc>().add(IncrementSummaryCount());

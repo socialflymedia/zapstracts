@@ -95,76 +95,77 @@ class AuthRepository {
       rethrow;
     }
   }
-  Future<bool> signUpWithGoogle() async {
-    bool newUser = false;
-    const webClientId = 'my-web.apps.googleusercontent.com';
-    const iosClientId = 'my-ios.apps.googleusercontent.com';
+    Future<bool> signUpWithGoogle() async {
+      bool newUser = false;
+      const webClientId = 'my-web.apps.googleusercontent.com';
+      const iosClientId = 'my-ios.apps.googleusercontent.com';
 
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: '401107895655-3o0kq37c5gl2vm5t8tjvtl3hsjvcadgs.apps.googleusercontent.com',
-      serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',
-    );
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        clientId: '401107895655-pa3h7g4dhjod75t1lg12mebk7r9dfku8.apps.googleusercontent.com',        // iOS client ID
+        serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',  // Web client ID
+      );
 
-    await googleSignIn.signOut(); // To ensure fresh login
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) throw 'Google sign-in aborted';
 
-    final googleAuth = await googleUser.authentication;
-    final accessToken = googleAuth.accessToken;
-    final idToken = googleAuth.idToken;
+      await googleSignIn.signOut(); // To ensure fresh login
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) throw 'Google sign-in aborted';
 
-    if (accessToken == null) throw 'No Access Token found.';
-    if (idToken == null) throw 'No ID Token found.';
+      final googleAuth = await googleUser.authentication;
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
 
-    final authResponse = await supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+      if (accessToken == null) throw 'No Access Token found.';
+      if (idToken == null) throw 'No ID Token found.';
 
-    final user = authResponse.user;
-    if (user == null) throw 'User not returned after sign-in.';
+      final authResponse = await supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
 
-    final name = user.userMetadata?['name'] ?? '';
-    final email = user.email ?? '';
-    final image = user.userMetadata?['avatar_url'] ?? '';
-    final phone = user.phone ?? '';
+      final user = authResponse.user;
+      if (user == null) throw 'User not returned after sign-in.';
 
-    // ✅ Check if user already exists
-    final userExists = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
+      final name = user.userMetadata?['name'] ?? '';
+      final email = user.email ?? '';
+      final image = user.userMetadata?['avatar_url'] ?? '';
+      final phone = user.phone ?? '';
 
-    if (userExists == null) {
-      // First-time sign-up → Insert user
-      await supabase.from('users').insert({
-        'id': user.id,
-        'email': email,
-        'name': name,
-        'phone': phone
-      });
-      print('✅ New user inserted in Supabase');
-      newUser = true;
-    } else {
-      print('👤 User already exists, skipping insert');
-      newUser = false;
+      // ✅ Check if user already exists
+      final userExists = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (userExists == null) {
+        // First-time sign-up → Insert user
+        await supabase.from('users').insert({
+          'id': user.id,
+          'email': email,
+          'name': name,
+          'phone': phone
+        });
+        print('✅ New user inserted in Supabase');
+        newUser = true;
+      } else {
+        print('👤 User already exists, skipping insert');
+        newUser = false;
+      }
+
+      // ✅ Store locally after checking/inserting user
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_id', user.id);
+      await prefs.setString('email', email);
+      await prefs.setString('name', name);
+      await prefs.setString('phone', phone);
+      await prefs.setString('image', image);
+      await prefs.setBool('login', true);
+
+      print('✅ User signed in and data stored locally');
+
+      return newUser; // true → new user, false → already existed
     }
-
-    // ✅ Store locally after checking/inserting user
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_id', user.id);
-    await prefs.setString('email', email);
-    await prefs.setString('name', name);
-    await prefs.setString('phone', phone);
-    await prefs.setString('image', image);
-    await prefs.setBool('login', true);
-
-    print('✅ User signed in and data stored locally');
-
-    return newUser; // true → new user, false → already existed
-  }
 
 
   // Future<void> signUpWithGoogle() async {

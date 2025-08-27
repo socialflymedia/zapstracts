@@ -46,11 +46,22 @@
    <key>UIApplicationSupportsIndirectInputEvents</key>
    <true/>
 
-   <!-- Internet Permission for iOS -->
+   <!-- Internet Permission -->
    <key>NSAppTransportSecurity</key>
    <dict>
       <key>NSAllowsArbitraryLoads</key>
       <true/>
    </dict>
+
+   <!-- Google OAuth URL Scheme for Supabase -->
+   <key>CFBundleURLTypes</key>
+   <array>
+      <dict>
+         <key>CFBundleURLSchemes</key>
+         <array>
+            <string>com.googleusercontent.apps.401107895655-pa3h7g4dhjod75t1lg12mebk7r9dfku8</string>
+         </array>
+      </dict>
+   </array>
 </dict>
 </plist>
