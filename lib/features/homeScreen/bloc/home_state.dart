@@ -6,6 +6,8 @@ class HomeInitial extends HomeState {}
 
 class HomeLoading extends HomeState {}
 
+class PaperSaving extends HomeState {}
+
 class HomeLoaded extends HomeState {
   final List<ResearchPaper> papers;
   final List<ResearchPaper> featuredPapers;
@@ -61,6 +63,7 @@ class HomeLoaded extends HomeState {
     );
   }
 }
+
 
 class HomeError extends HomeState {
   final String message;

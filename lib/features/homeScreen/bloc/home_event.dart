@@ -43,6 +43,15 @@ class ChangeFeedType extends HomeEvent {
 
 class RefreshResearchPapers extends HomeEvent {}
 
+
+class SaveResearchPaper extends HomeEvent {
+  final String paperId;
+
+  const SaveResearchPaper(this.paperId);
+
+  @override
+  List<Object?> get props => [paperId];
+}
 // New feedback-related events
 class CheckFeedbackStatus extends HomeEvent {}
 

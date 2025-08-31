@@ -7,6 +7,7 @@ class ResearchPaper {
   final String publishedIn;
   final int readTime;
   final List<String> tags;
+  final bool isSaved; // Add this property
 
   ResearchPaper({
     required this.id,
@@ -17,6 +18,7 @@ class ResearchPaper {
     required this.publishedIn,
     required this.readTime,
     required this.tags,
+    this.isSaved = false, // Default to false
   });
 
   factory ResearchPaper.fromMap(Map<String, dynamic> map) {
@@ -37,7 +39,32 @@ class ResearchPaper {
       publishedIn: map['publication'] ?? '',
       readTime: 5,
       tags: [],
+      isSaved: false, // Will be updated when fetched
     );
   }
 
+  // Add copyWith method
+  ResearchPaper copyWith({
+    String? id,
+    String? title,
+    String? summary,
+    String? imageUrl,
+    String? author,
+    String? publishedIn,
+    int? readTime,
+    List<String>? tags,
+    bool? isSaved,
+  }) {
+    return ResearchPaper(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
+      imageUrl: imageUrl ?? this.imageUrl,
+      author: author ?? this.author,
+      publishedIn: publishedIn ?? this.publishedIn,
+      readTime: readTime ?? this.readTime,
+      tags: tags ?? this.tags,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
 }

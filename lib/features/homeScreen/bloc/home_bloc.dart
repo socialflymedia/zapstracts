@@ -1,4 +1,6 @@
-  import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
   import 'package:supabase_flutter/supabase_flutter.dart';
 
   import '../../../Data/repositories/home/home_repositorty.dart';
@@ -19,6 +21,7 @@
       on<FilterByCategory>(_onFilterByCategory);
       on<ChangeFeedType>(_onChangeFeedType);
       on<RefreshResearchPapers>(_onRefreshResearchPapers);
+      on<SaveResearchPaper>(_saveResearchPaper);
       on<CheckFeedbackStatus>(_onCheckFeedbackStatus);
       on<SubmitFeedback>(_onSubmitFeedback);
       on<IncrementSummaryCount>(_onIncrementSummaryCount);
@@ -32,14 +35,12 @@
       emit(HomeLoading());
       try {
         _allPapers = await repository.fetchResearchPapers();
-    //    print('paper from rep ${_allPapers}');
-  //print('Current User ID: $_currentUserId' );
+
+
         // Check feedback status after loading papers
         if (_currentUserId != null) {
-          //print('Fetching summary count for user: $_currentUserId');
           final summaryCount = await repository.getUserSummaryCount(_currentUserId!);
-          //print('summary count from rep ${summaryCount.summaryCount}');
-          final shouldShowFeedback = summaryCount.summaryCount >= 3 && !summaryCount.feedbackGiven;
+          final shouldShowFeedback = summaryCount.summaryCount >= 5 && !summaryCount.feedbackGiven;
 
           emit(HomeLoaded(
             papers: _allPapers,
@@ -64,6 +65,70 @@
         emit(HomeError('Failed to load papers: $e'));
       }
     }
+
+// Updated save method to update the paper's saved status in the list
+    Future<void> _saveResearchPaper(
+        SaveResearchPaper event,
+        Emitter<HomeState> emit
+        ) async {
+      if (state is! HomeLoaded) return;
+      final currentState = state as HomeLoaded;
+
+      // Optimistically update the paper's saved status in all lists
+      final updatedPapers = _updatePaperSavedStatus(currentState.papers, event.paperId, true);
+      final updatedFeaturedPapers = _updatePaperSavedStatus(currentState.featuredPapers, event.paperId, true);
+      final updatedTrendingPapers = _updatePaperSavedStatus(currentState.trendingPapers, event.paperId, true);
+      final updatedMyFeedPapers = _updatePaperSavedStatus(currentState.myFeedPapers, event.paperId, true);
+      final updatedWorldPapers = _updatePaperSavedStatus(currentState.worldPapers, event.paperId, true);
+
+      // Update the main _allPapers list too
+      _allPapers = _updatePaperSavedStatus(_allPapers, event.paperId, true);
+
+      // Emit updated state immediately
+      emit(currentState.copyWith(
+        papers: updatedPapers,
+        featuredPapers: updatedFeaturedPapers,
+        trendingPapers: updatedTrendingPapers,
+        myFeedPapers: updatedMyFeedPapers,
+        worldPapers: updatedWorldPapers,
+      ));
+
+      // Save to database in background
+      try {
+        await repository.saveResearchPaper(event.paperId);
+        // Success - the UI already shows the saved state
+      } catch (e) {
+        // If save fails, revert the saved status
+        final revertedPapers = _updatePaperSavedStatus(updatedPapers, event.paperId, false);
+        final revertedFeaturedPapers = _updatePaperSavedStatus(updatedFeaturedPapers, event.paperId, false);
+        final revertedTrendingPapers = _updatePaperSavedStatus(updatedTrendingPapers, event.paperId, false);
+        final revertedMyFeedPapers = _updatePaperSavedStatus(updatedMyFeedPapers, event.paperId, false);
+        final revertedWorldPapers = _updatePaperSavedStatus(updatedWorldPapers, event.paperId, false);
+
+        _allPapers = _updatePaperSavedStatus(_allPapers, event.paperId, false);
+
+        emit(currentState.copyWith(
+          papers: revertedPapers,
+          featuredPapers: revertedFeaturedPapers,
+          trendingPapers: revertedTrendingPapers,
+          myFeedPapers: revertedMyFeedPapers,
+          worldPapers: revertedWorldPapers,
+        ));
+
+        print('Failed to save paper: $e');
+      }
+    }
+
+// Helper method to update paper saved status in a list
+    List<ResearchPaper> _updatePaperSavedStatus(List<ResearchPaper> papers, String paperId, bool isSaved) {
+      return papers.map((paper) {
+        if (paper.id == paperId) {
+          return paper.copyWith(isSaved: isSaved);
+        }
+        return paper;
+      }).toList();
+    }
+
 
     Future<void> _onSearchResearchPapers(
         SearchResearchPapers event,
@@ -234,4 +299,7 @@
           paper.summary.toLowerCase().contains(query.toLowerCase())
       ).toList();
     }
+
+
+
   }

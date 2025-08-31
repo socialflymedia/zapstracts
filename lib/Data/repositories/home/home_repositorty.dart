@@ -7,24 +7,56 @@ class HomeRepository {
   final supabase = Supabase.instance.client;
 
   Future<List<ResearchPaper>> fetchResearchPapers() async {
+    // Get current user ID
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+
+    // Fetch papers
     final response = await supabase
         .from('papers_metadata')
         .select('''
-          paper_id,
-          title,
-          author,
-          publication,
-          summary_images(card_image_url)
-        ''');
+        paper_id,
+        title,
+        author,
+        publication,
+        summary_images(card_image_url)
+      ''');
 
     if (response == null || response.isEmpty) {
       return [];
     }
 
+    List<String> savedPaperIds = [];
+
+    // If user is logged in, fetch their saved papers
+    if (userId != null) {
+      try {
+        final savedResponse = await supabase
+            .from('saved_papers')
+            .select('paper_id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (savedResponse != null && savedResponse['paper_id'] != null) {
+          savedPaperIds = List<String>.from(savedResponse['paper_id']);
+        }
+        print('Saved paper IDs for user $userId: $savedPaperIds');
+      } catch (e) {
+        print('Error fetching saved papers: $e');
+      }
+    }
+
+    // Map papers and include saved status
     return (response as List)
-        .map((paper) => ResearchPaper.fromMap(paper))
+        .map((paper) {
+      final researchPaper = ResearchPaper.fromMap(paper);
+      // Set the isSaved property based on saved papers list
+      return researchPaper.copyWith(
+        isSaved: savedPaperIds.contains(researchPaper.id),
+      );
+    })
         .toList();
   }
+
 
   // Check user's summary count and feedback status
   Future<UserSummaryCount> getUserSummaryCount(String userId) async {
@@ -66,12 +98,53 @@ class HomeRepository {
     }
   }
 
+
+
+
+  Future<void> saveResearchPaper(String paperId) async {
+    var userId = '956fddcd-8163-45b9-a6d9-79b94c1329f3';
+
+    try {
+      // First, check if user already has saved papers
+      final existingData = await supabase
+          .from('saved_papers')
+          .select('paper_id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (existingData != null) {
+        // User has existing saved papers - update the array
+        List<String> existingPaperIds = List<String>.from(existingData['paper_id'] ?? []);
+
+        if (!existingPaperIds.contains(paperId)) {
+          existingPaperIds.add(paperId);
+
+          await supabase
+              .from('saved_papers')
+              .update({'paper_id': existingPaperIds})
+              .eq('user_id', userId);
+        }
+      } else {
+        // User doesn't have any saved papers - create new row
+        await supabase.from('saved_papers').insert({
+          'user_id': userId,
+          'paper_id': [paperId], // Array with single paper ID
+        });
+      }
+    } catch (e) {
+      throw Exception('Failed to save paper: $e');
+    }
+  }
+
+
   // Increment summary count
   Future<void> incrementSummaryCount(String userId) async {
     await supabase.rpc('increment_summary_count', params: {
       'user_id_param': userId,
     });
   }
+
+
 
   // Submit feedback
   Future<void> submitFeedback(FeedbackModel feedback) async {

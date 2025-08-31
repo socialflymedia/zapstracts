@@ -96,7 +96,8 @@ class MyApp extends StatelessWidget {
                   primarySwatch: Colors.blue,
                   textTheme: GoogleFonts.poppinsTextTheme(),
                 ),
-                 home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+                 // home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+                home: HomeScreen(),
                // home: ExpertiseLevelScreen()
                 //home: TopicSelectionScreen()
               ),
