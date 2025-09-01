@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:zapstract/features/Auth/bloc/auth_bloc.dart';
-import 'package:zapstract/features/Auth/presentation/screens/createAccount.dart';
 import 'package:zapstract/features/Auth/presentation/screens/login.dart';
 import 'package:zapstract/features/homeScreen/home_screen.dart';
+import 'package:zapstract/features/savedArticles/savedPapersScreen.dart';
 import 'package:zapstract/features/search/presentation/search_screen.dart';
 
 import '../../utils/components/navbar/customnavbar.dart';
@@ -27,10 +28,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Trigger profile loading when the screen initializes
     context.read<ProfileBloc>().add(LoadProfile());
   }
+
   int _selectedIndex = 2;
+
   void _onNavItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -47,13 +49,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         MaterialPageRoute(builder: (context) => SearchScreen()),
       );
     }
-   else if (index == 2) {
+    else if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ProfileScreen()),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, authState) {
                 if (authState is Unauthenticated) {
@@ -69,13 +71,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => LoginScreen()),
-                        (route) => false, // This removes ALL previous routes from the stack
+                        (route) => false,
                   );
                 }
-
               },
               builder: (context, authState) {
-                return const SizedBox(); // or your UI
+                return const SizedBox();
               },
             ),
 
@@ -87,15 +88,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   } else if (state is ProfileLoaded) {
                     return SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        padding: EdgeInsets.symmetric(horizontal: 6.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-
                             _buildHeader(context),
                             _buildProfileInfo(state),
-                             _buildStats(state),
-
+                            _buildStats(state),
+                            _buildSavedArticlesButton(), // Simple button
                             _buildPreferences(context, state),
                           ],
                         ),
@@ -106,13 +106,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(state.message),
-                          const SizedBox(height: 16),
+                          Text(
+                            state.message,
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
+                          SizedBox(height: 16.h),
                           ElevatedButton(
                             onPressed: () {
                               context.read<ProfileBloc>().add(LoadProfile());
                             },
-                            child: const Text('Retry'),
+                            child: Text(
+                              'Retry',
+                              style: TextStyle(fontSize: 14.sp),
+                            ),
                           ),
                         ],
                       ),
@@ -134,20 +140,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.w),
       color: Colors.white,
       child: Row(
         children: [
-          const Text(
+          Text(
             'Researcher Profile',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 24.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: Icon(
+              Icons.settings_outlined,
+              size: 24.sp,
+            ),
             onPressed: () {
               // Handle settings
             },
@@ -156,21 +165,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  Future<String?> _getProfileImageUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('image');
-  }
 
   Widget _buildProfileInfo(ProfileLoaded state) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-
+        borderRadius: BorderRadius.circular(25.r),
       ),
-
       child: Row(
         children: [
           // Avatar on the left
@@ -178,10 +181,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             future: SharedPreferences.getInstance(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Color(0xFF6750A4),
-                  child: CircularProgressIndicator(color: Colors.white),
+                return CircleAvatar(
+                  radius: 50.r,
+                  backgroundColor: const Color(0xFF6750A4),
+                  child: const CircularProgressIndicator(color: Colors.white),
                 );
               }
 
@@ -192,25 +195,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               if (imageUrl.isNotEmpty) {
                 return CircleAvatar(
-                  radius: 50,
+                  radius: 50.r,
                   backgroundImage: NetworkImage(imageUrl),
                 );
               } else {
                 return CircleAvatar(
-                  radius: 50,
+                  radius: 50.r,
                   backgroundColor: const Color(0xFF6750A4),
                   child: Text(
                     initial,
-                    style: const TextStyle(fontSize: 40, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 40.sp,
+                      color: Colors.white,
+                    ),
                   ),
                 );
               }
             },
           ),
-
-
-          const SizedBox(width: 16), // Space between the avatar and text
-
+          SizedBox(width: 16.w),
           // Name, occupation, and address on the right in a column
           Expanded(
             child: Column(
@@ -218,29 +221,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   state.profile.name,
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   state.profile.occupation,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
-                  ' ${state.profile.subject}',
+                  state.profile.subject,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     color: Colors.grey[600],
                   ),
                 ),
-
               ],
             ),
           ),
@@ -249,75 +251,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF6750A4),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStats(ProfileLoaded state) {
-    // Only one selected subject exists
     final selectedSubject = state.profile.subject;
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            blurRadius: 8.r,
+            offset: Offset(0, 3.h),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Your Research Focus',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 22.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           Icon(
             _getIconForSubject(selectedSubject),
-            size: 50,
+            size: 50.sp,
             color: Colors.deepPurple,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text(
             selectedSubject,
-            style: const TextStyle(
-              fontSize: 20,
+            style: TextStyle(
+              fontSize: 20.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 16),
-          //_buildStatBar(selectedSubject.key, selectedSubject.value),
         ],
+      ),
+    );
+  }
+
+  // Simple Saved Articles Button (same style as Preferences)
+  Widget _buildSavedArticlesButton() {
+    return Container(
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25.r),
+      ),
+      child: InkWell(
+        onTap: () {
+          // TODO: Navigate to Saved Articles page
+          print("Navigate to Saved Articles");
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => SavedArticlesPage()));
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.bookmark_outlined,
+              size: 24.sp,
+              color: const Color(0xFF6750A4),
+            ),
+            SizedBox(width: 16.w),
+            InkWell(
+              onTap: (){
+                print("Navigate to Saved Articles");
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SavedPapersScreen()));
+              },
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Saved Articles',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'View your bookmarked papers',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+              size: 24.sp,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -335,63 +372,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
-  Widget _buildStatBar(String label, double progress) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Stack(
-          children: [
-            Container(
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: progress,
-              child: Container(
-                height: 8,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6750A4),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildPreferences(BuildContext context, ProfileLoaded state) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(25.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Preferences',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           _buildPreferenceItem(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
@@ -402,7 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          const Divider(height: 32),
+          Divider(height: 32.h),
           _buildPreferenceItem(
             icon: Icons.language_outlined,
             title: 'Language',
@@ -411,12 +410,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Select Language'),
+                  title: Text(
+                    'Select Language',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        title: const Text('English'),
+                        title: Text(
+                          'English',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
                         onTap: () {
                           context.read<ProfileBloc>().add(
                             const UpdateLanguage('English'),
@@ -425,7 +430,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
                       ListTile(
-                        title: const Text('Spanish'),
+                        title: Text(
+                          'Spanish',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
                         onTap: () {
                           context.read<ProfileBloc>().add(
                             const UpdateLanguage('Spanish'),
@@ -439,7 +447,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          const Divider(height: 32),
+          Divider(height: 32.h),
           _buildPreferenceItem(
             icon: Icons.help_outline,
             title: 'Help & Support',
@@ -448,7 +456,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Handle help and support
             },
           ),
-          const Divider(height: 32),
+          Divider(height: 32.h),
           _buildPreferenceItem(
             icon: Icons.logout,
             title: 'Logout',
@@ -457,20 +465,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  content: Text(
+                    'Are you sure you want to logout?',
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
-                        // TODO: Clear session/token if needed
                         context.read<AuthBloc>().add(LogoutRequested());
-                        // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                       },
-                      child: const Text('Logout'),
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                     ),
                   ],
                 ),
@@ -481,7 +499,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
 
   Widget _buildPreferenceItem({
     required IconData icon,
@@ -495,35 +512,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(
             icon,
-            size: 24,
+            size: 24.sp,
             color: const Color(0xFF6750A4),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     color: Colors.grey[600],
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.chevron_right,
             color: Colors.grey,
+            size: 24.sp,
           ),
         ],
       ),

@@ -137,6 +137,65 @@ class HomeRepository {
   }
 
 
+  Future<List<ResearchPaper>> fetchSavedPapers() async {
+    try {
+      //final userId = Supabase.instance.client.auth.currentUser?.id;
+       final userId = '956fddcd-8163-45b9-a6d9-79b94c1329f3';
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
+
+      final savedResponse = await supabase
+          .from('saved_papers')
+          .select('paper_id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (savedResponse == null || savedResponse['paper_id'] == null) {
+        return [];
+      }
+
+      List<String> savedPaperIds = List<String>.from(savedResponse['paper_id']);
+
+      if (savedPaperIds.isEmpty) {
+        return [];
+      }
+
+      // Using .filter() with raw PostgREST 'in' syntax
+      final filterValue = '(${savedPaperIds.map((id) => '"$id"').join(',')})';
+
+      final papersResponse = await supabase
+          .from('papers_metadata')
+          .select('''
+          paper_id,
+          title,
+          author,
+          publication,
+          summary_images(card_image_url)
+        ''')
+          .filter('paper_id', 'in', filterValue);
+
+      if (papersResponse == null || papersResponse.isEmpty) {
+        return [];
+      }
+
+      // Convert the response to List<ResearchPaper>
+      return (papersResponse as List)
+          .map((paper) {
+        final researchPaper = ResearchPaper.fromMap(paper);
+        // Mark as saved since these are all saved papers
+        return researchPaper.copyWith(isSaved: true);
+      })
+          .toList();
+
+    } catch (e) {
+      print('Error fetching saved papers: $e');
+      return [];
+    }
+  }
+
+
+
   // Increment summary count
   Future<void> incrementSummaryCount(String userId) async {
     await supabase.rpc('increment_summary_count', params: {

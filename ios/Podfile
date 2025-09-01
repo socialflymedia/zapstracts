@@ -1,21 +1,24 @@
-# Uncomment this line to define a global platform for your project
 platform :ios, '17.0'
+
+# Your Xcode project name (matches Runner.xcodeproj)
+project 'Runner.xcodeproj'
 
 use_frameworks!
 use_modular_headers!
 
 target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
-
   flutter_application_path = '../'
   eval(File.read(File.join(flutter_application_path, '.flutter-plugins-dependencies')), binding)
 
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
-      end
+  # Google Sign-In dependency
+  pod 'GoogleSignIn', '~> 7.0'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Force deployment target to iOS 17
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
     end
   end
 end

@@ -8,6 +8,7 @@ import 'package:zapstract/Data/repositories/home/home_repositorty.dart';
 import 'package:zapstract/features/article/bloc/article_bloc.dart';
 import 'package:zapstract/features/article/repository/artivle_repository.dart';
 import 'package:zapstract/features/personalization/presentation/topic_selection_screen.dart';
+import 'package:zapstract/features/profile/profile_screen.dart';
 
 import 'Data/repositories/auth/auth_repository.dart';
 import 'Data/repositories/search/search_repository.dart';
@@ -97,7 +98,7 @@ class MyApp extends StatelessWidget {
                   textTheme: GoogleFonts.poppinsTextTheme(),
                 ),
                  // home: isLoggedIn ? const HomeScreen() : const GetStarted(),
-                home: HomeScreen(),
+                home: ProfileScreen(),
                // home: ExpertiseLevelScreen()
                 //home: TopicSelectionScreen()
               ),

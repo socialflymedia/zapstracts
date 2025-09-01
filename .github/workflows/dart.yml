@@ -33,8 +33,11 @@ jobs:
         run: pod install --repo-update
         working-directory: ios
 
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+      - name: Select Xcode 15.4
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Build iOS (no codesign, device SDK only)
+        run: flutter build ios --release --no-codesign --no-simulator
 
       - name: Prepare IPA Payload
         run: mkdir Payload

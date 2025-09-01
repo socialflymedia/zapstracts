@@ -6,6 +6,7 @@ import 'package:zapstract/core/constants/colors/colors.dart';
 import 'package:zapstract/features/article/bloc/article_event.dart';
 import 'package:zapstract/features/homeScreen/bloc/home_bloc.dart';
 import 'package:zapstract/features/homeScreen/bloc/home_event.dart';
+import 'package:zapstract/features/homeScreen/home_screen.dart';
 
 import '../../utils/components/article/section.dart';
 import '../../utils/components/feedback_form/feedback_form_widget.dart';
@@ -153,22 +154,39 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
     );
   }
 
-  Widget _buildProgressIndicator() {
+  Widget _buildProgressIndicator(BuildContext context) {
     return Row(
-      children: List.generate(_sectionOrder.length - 1, (index) { // -1 to exclude summary page
-        return Expanded(
-          child: Container(
-            height: 2,
-            margin: EdgeInsets.only(right: index < _sectionOrder.length - 2 ? 4 : 0),
-            decoration: BoxDecoration(
-              color: index <= _currentPage ? Colors.white : Colors.white.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(1),
-            ),
+      children: [
+        // Back button on the left
+        IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+
+
+        // Progress indicators
+        Expanded(
+          child: Row(
+            children: List.generate(_sectionOrder.length - 1, (index) {
+              return Expanded(
+                child: Container(
+                  height: 2,
+                  margin: EdgeInsets.only(right: index < _sectionOrder.length - 2 ? 4 : 0),
+                  decoration: BoxDecoration(
+                    color: index <= _currentPage ? Colors.white : Colors.white.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                ),
+              );
+            }),
           ),
-        );
-      }),
+        ),
+      ],
     );
   }
+
 
   Widget _buildHeroPage(BuildContext context, article) {
     return GestureDetector(
@@ -232,7 +250,7 @@ class _ArticleSummaryPageState extends State<ArticleSummaryPage> {
 
                     // Progress bars
                     Expanded(
-                      child: _buildProgressIndicator(),
+                      child: _buildProgressIndicator(context),
                     ),
 
                     // Time indicator
