@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -97,9 +98,9 @@ class AuthRepository {
   }
     Future<bool> signUpWithGoogle() async {
       bool newUser = false;
-      const webClientId = 'my-web.apps.googleusercontent.com';
-      const iosClientId = 'my-ios.apps.googleusercontent.com';
 
+      final clientId = dotenv.env['GOOGLE_CLIENT_ID'] ?? '';
+      final serverClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'] ?? '';
       final GoogleSignIn googleSignIn = GoogleSignIn(
         clientId: '401107895655-pa3h7g4dhjod75t1lg12mebk7r9dfku8.apps.googleusercontent.com',        // iOS client ID
         serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',  // Web client ID
