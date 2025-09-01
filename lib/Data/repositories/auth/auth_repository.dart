@@ -102,8 +102,8 @@ class AuthRepository {
       final clientId = dotenv.env['GOOGLE_CLIENT_ID'] ?? '';
       final serverClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'] ?? '';
       final GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId: '401107895655-pa3h7g4dhjod75t1lg12mebk7r9dfku8.apps.googleusercontent.com',        // iOS client ID
-        serverClientId: '401107895655-oo3h4s40h1gqrv1rp3v2greukfcgk7u7.apps.googleusercontent.com',  // Web client ID
+        clientId: clientId,        // iOS client ID
+        serverClientId: serverClientId,  // Web client ID
       );
 
 
